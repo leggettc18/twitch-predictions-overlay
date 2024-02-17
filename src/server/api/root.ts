@@ -1,4 +1,5 @@
 import { postRouter } from "~/server/api/routers/post";
+import { subscriptionsRouter } from "~/server/api/routers/subscriptions";
 import { createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -7,6 +8,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  subscriptions: subscriptionsRouter,
   post: postRouter,
 });
 
