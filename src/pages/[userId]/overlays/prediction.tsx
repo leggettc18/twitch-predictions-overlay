@@ -93,7 +93,7 @@ function Prediction({ outcomes }: PredictionProps) {
     <>
       {outcomes.map((outcome) => (
         <p key={outcome.id}>
-          {outcome.title} - {outcome.channel_points ?? 0} points;
+          {outcome.title} - {outcome.channel_points ?? 0} points
         </p>
       ))}
     </>
@@ -121,11 +121,10 @@ export default function Page() {
     userId: string,
     sessionId: string,
   ) => {
-    const result = await subscribeToPredictions.mutateAsync({
+    await subscribeToPredictions.mutateAsync({
       userId,
       sessionId,
     });
-    console.log(result);
   };
 
   const handleWebsocketMessage = async (
@@ -146,6 +145,20 @@ export default function Page() {
         if (parsed.metadata.subscription_type === "channel.prediction.begin") {
           setPredictionState(PredictionState.STARTED);
           setPredictionEvent(parsed);
+        } else if (
+          parsed.metadata.subscription_type === "channel.prediction.progress"
+        ) {
+          setPredictionEvent(parsed);
+        } else if (
+          parsed.metadata.subscription_type === "channel.prediction.lock"
+        ) {
+          setPredictionState(PredictionState.LOCKED);
+          setPredictionEvent(parsed);
+        } else if (
+          parsed.metadata.subscription_type === "channel.prediction.end"
+        ) {
+          setPredictionState(PredictionState.ENDED);
+          setPredictionEvent(parsed);
         }
       }
     }
@@ -155,7 +168,11 @@ export default function Page() {
     void handleWebsocketMessage(lastMessage);
   }, [lastMessage]);
 
-  if (predictionEvent?.payload.event) {
+  if (
+    predictionEvent?.payload.event &&
+    (predictionState == PredictionState.STARTED ||
+      predictionState == PredictionState.ENDED)
+  ) {
     return <Prediction outcomes={predictionEvent?.payload.event?.outcomes} />;
   }
 }
