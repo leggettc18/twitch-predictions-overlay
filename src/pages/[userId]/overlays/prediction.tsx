@@ -85,21 +85,41 @@ const twitchWebsocketMessageSchema = z.object({
 type TwitchWebsocketMessage = z.infer<typeof twitchWebsocketMessageSchema>;
 
 type PredictionProps = {
+  title: string;
   outcomes: TwitchOutcome[];
 };
 
-function Prediction({ outcomes }: PredictionProps) {
+function Prediction({ title, outcomes }: PredictionProps) {
+  const colors: string[] = [
+    "bg-blue-600",
+    "bg-red-600",
+    "bg-green-600",
+    "bg-purple-600",
+    "bg-orange-600",
+    "bg-teal-600",
+    "bg-yellow-600",
+  ];
   return (
-    <div className="flex flex-wrap justify-stretch gap-3 p-2">
-      {outcomes.map((outcome) => (
-        <div
-          key={outcome.id}
-          className="min-w-36 flex-grow basis-1/5 flex-col rounded-3xl bg-blue-500 p-4 text-center text-zinc-50"
-        >
-          <div className="font-sans text-xl">{outcome.title}</div>
-          <div className="font-sans text-lg">{outcome.channel_points ?? 0}</div>
-        </div>
-      ))}
+    <div className="flex-col gap-2 text-center font-sans text-2xl font-bold text-zinc-50">
+      <div className="m-2 rounded-full bg-zinc-800 bg-opacity-35 p-2">
+        {title}
+      </div>
+      <div className="flex flex-wrap justify-stretch gap-3 p-2">
+        {outcomes.map((outcome, index) => {
+          let classes =
+            "min-w-36 flex-grow flex-col rounded-3xl p-4 text-center text-zinc-50 ";
+          classes += colors[index % colors.length];
+
+          return (
+            <div key={outcome.id} className={classes}>
+              <div className="font-sans text-xl">{outcome.title}</div>
+              <div className="font-sans text-lg">
+                {outcome.channel_points ?? 0}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -177,6 +197,11 @@ export default function Page() {
     (predictionState == PredictionState.STARTED ||
       predictionState == PredictionState.ENDED)
   ) {
-    return <Prediction outcomes={predictionEvent?.payload.event?.outcomes} />;
+    return (
+      <Prediction
+        title={predictionEvent?.payload.event?.title}
+        outcomes={predictionEvent?.payload.event?.outcomes}
+      />
+    );
   }
 }
