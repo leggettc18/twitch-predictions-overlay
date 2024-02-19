@@ -90,13 +90,17 @@ type PredictionProps = {
 
 function Prediction({ outcomes }: PredictionProps) {
   return (
-    <>
+    <div className="flex flex-wrap justify-stretch gap-3 p-2">
       {outcomes.map((outcome) => (
-        <p key={outcome.id}>
-          {outcome.title} - {outcome.channel_points ?? 0} points
-        </p>
+        <div
+          key={outcome.id}
+          className="min-w-36 flex-grow basis-1/5 flex-col rounded-3xl bg-blue-500 p-4 text-center text-zinc-50"
+        >
+          <div className="font-sans text-xl">{outcome.title}</div>
+          <div className="font-sans text-lg">{outcome.channel_points ?? 0}</div>
+        </div>
       ))}
-    </>
+    </div>
   );
 }
 
