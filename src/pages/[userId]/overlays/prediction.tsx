@@ -107,7 +107,7 @@ function Prediction({ title, outcomes }: PredictionProps) {
       <div className="flex flex-wrap justify-stretch gap-3 p-2">
         {outcomes.map((outcome, index) => {
           let classes =
-            "min-w-36 flex-grow flex-col rounded-3xl p-4 text-center text-zinc-50 ";
+            "w-48 flex-grow flex-col rounded-full p-4 text-center text-zinc-50 ";
           classes += colors[index % colors.length];
 
           return (
@@ -183,6 +183,10 @@ export default function Page() {
         ) {
           setPredictionState(PredictionState.ENDED);
           setPredictionEvent(parsed);
+          setTimeout(() => {
+            setPredictionState(PredictionState.NOT_STARTED);
+            setPredictionEvent(null);
+          }, 30000);
         }
       }
     }
@@ -203,5 +207,7 @@ export default function Page() {
         outcomes={predictionEvent?.payload.event?.outcomes}
       />
     );
+  } else {
+    return null;
   }
 }
