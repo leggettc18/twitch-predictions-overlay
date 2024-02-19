@@ -1,6 +1,7 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
+import { useEffect } from "react";
 
 import { api } from "~/utils/api";
 
@@ -62,6 +63,12 @@ function AuthShowcase() {
     undefined, // no input
     { enabled: sessionData?.user !== undefined },
   );
+
+  useEffect(() => {
+    if (sessionData?.error === "RefreshAccessTokenError") {
+      void signIn();
+    }
+  }, [sessionData]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">

@@ -4,6 +4,7 @@ import {
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
+  type TokenSet,
 } from "next-auth";
 import TwitchProvider from "next-auth/providers/twitch";
 
@@ -23,6 +24,7 @@ declare module "next-auth" {
       // ...other properties
       // role: UserRole;
     };
+    error?: "RefreshAccessTokenError";
   }
 
   // interface User {
@@ -38,13 +40,53 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: async ({ session, user }) => {
+      const [twitch] = await db.account.findMany({
+        where: { userId: user.id, provider: "twitch" },
+      });
+      if ((twitch?.expires_at ?? 0) * 1000 < Date.now()) {
+        try {
+          const response = await fetch("https://id.twitch.tv/oauth2/token", {
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              client_id: env.TWITCH_CLIENT_ID,
+              clieint_secret: env.TWITCH_CLIENT_SECRET,
+              grant_type: "refresh_token",
+              refresh_token: twitch?.refresh_token ?? "",
+            }),
+            method: "POST",
+          });
+
+          const tokens: TokenSet = (await response.json()) as TokenSet;
+
+          if (!response.ok) throw tokens;
+
+          await db.account.update({
+            data: {
+              access_token: tokens.access_token,
+              expires_at: tokens.expires_at,
+              refresh_token: tokens.refresh_token ?? twitch?.refresh_token,
+            },
+            where: {
+              provider_providerAccountId: {
+                provider: "twitch",
+                providerAccountId: twitch?.providerAccountId ?? "",
+              },
+            },
+          });
+        } catch (error) {
+          console.error("Error refreshing access_token", error);
+          session.error = "RefreshAccessTokenError";
+        }
+      }
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+        },
+      };
+    },
   },
   adapter: PrismaAdapter(db),
   providers: [
