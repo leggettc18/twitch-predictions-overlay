@@ -50,7 +50,7 @@ export const authOptions: NextAuthOptions = {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({
               client_id: env.TWITCH_CLIENT_ID,
-              clieint_secret: env.TWITCH_CLIENT_SECRET,
+              client_secret: env.TWITCH_CLIENT_SECRET,
               grant_type: "refresh_token",
               refresh_token: twitch?.refresh_token ?? "",
             }),
