@@ -202,7 +202,6 @@ export default function Page() {
           setPredictionEvent(parsed);
           setTimeout(() => {
             setPredictionState(PredictionState.NOT_STARTED);
-            setPredictionEvent(null);
           }, 30000);
         }
       }
