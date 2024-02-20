@@ -87,9 +87,10 @@ type TwitchWebsocketMessage = z.infer<typeof twitchWebsocketMessageSchema>;
 type PredictionProps = {
   title: string;
   outcomes: TwitchOutcome[];
+  status: PredictionState;
 };
 
-function Prediction({ title, outcomes }: PredictionProps) {
+function Prediction({ title, outcomes, status }: PredictionProps) {
   const colors: string[] = [
     "bg-blue-600",
     "bg-red-600",
@@ -99,8 +100,15 @@ function Prediction({ title, outcomes }: PredictionProps) {
     "bg-teal-600",
     "bg-yellow-600",
   ];
+  let classes =
+    "flex-col gap-2 text-center font-sans text-2xl font-bold text-zinc-50 transition-opacity duration-300";
+  if (status === PredictionState.STARTED || status == PredictionState.ENDED) {
+    classes += " opacity-100";
+  } else {
+    classes += " opacity-0";
+  }
   return (
-    <div className="flex-col gap-2 text-center font-sans text-2xl font-bold text-zinc-50">
+    <div className={classes}>
       <div className="m-2 rounded-full bg-zinc-800 bg-opacity-35 p-2">
         {title}
       </div>
@@ -135,11 +143,12 @@ export default function Page() {
   const [predictionState, setPredictionState] = useState(
     PredictionState.NOT_STARTED,
   );
+  const [socketUrl, setSocketUrl] = useState("wss://eventsub.wss.twitch.tv/ws");
   const [predictionEvent, setPredictionEvent] =
     useState<TwitchWebsocketMessage | null>(null);
   const router = useRouter();
   const subscribeToPredictions = api.subscriptions.predictions.useMutation();
-  const { lastMessage } = useWebSocket("wss://eventsub.wss.twitch.tv/ws");
+  const { lastMessage } = useWebSocket(socketUrl);
 
   const handleSubscribingToPredictions = async (
     userId: string,
@@ -149,6 +158,10 @@ export default function Page() {
       userId,
       sessionId,
     });
+  };
+
+  const handleReconnectUrl = async (reconnect_url: string | null) => {
+    setSocketUrl(reconnect_url ?? socketUrl);
   };
 
   const handleWebsocketMessage = async (
@@ -164,6 +177,10 @@ export default function Page() {
             router.query.userId as string,
             parsed.payload.session?.id,
           );
+        }
+      } else if (parsed.metadata.message_type === "session_reconnect") {
+        if (parsed.payload.session) {
+          await handleReconnectUrl(parsed.payload.session?.reconnect_url);
         }
       } else if (parsed.metadata.message_type === "notification") {
         if (parsed.metadata.subscription_type === "channel.prediction.begin") {
@@ -196,18 +213,11 @@ export default function Page() {
     void handleWebsocketMessage(lastMessage);
   }, [lastMessage]);
 
-  if (
-    predictionEvent?.payload.event &&
-    (predictionState == PredictionState.STARTED ||
-      predictionState == PredictionState.ENDED)
-  ) {
-    return (
-      <Prediction
-        title={predictionEvent?.payload.event?.title}
-        outcomes={predictionEvent?.payload.event?.outcomes}
-      />
-    );
-  } else {
-    return null;
-  }
+  return (
+    <Prediction
+      title={predictionEvent?.payload.event?.title ?? ""}
+      outcomes={predictionEvent?.payload.event?.outcomes ?? []}
+      status={predictionState}
+    />
+  );
 }
