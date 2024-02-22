@@ -84,13 +84,19 @@ const twitchWebsocketMessageSchema = z.object({
 
 type TwitchWebsocketMessage = z.infer<typeof twitchWebsocketMessageSchema>;
 
+enum Layout {
+  HORIZONTAL,
+  VERTICAL,
+}
+
 type PredictionProps = {
   title: string;
   outcomes: TwitchOutcome[];
   status: PredictionState;
+  layout: Layout;
 };
 
-function Prediction({ title, outcomes, status }: PredictionProps) {
+function Prediction({ title, outcomes, status, layout }: PredictionProps) {
   const colors: string[] = [
     "bg-blue-600",
     "bg-red-600",
@@ -107,29 +113,68 @@ function Prediction({ title, outcomes, status }: PredictionProps) {
   } else {
     classes += " opacity-0";
   }
-  return (
-    <div className={classes}>
-      <div className="m-2 rounded-full bg-zinc-800 bg-opacity-35 p-2">
-        {title}
-      </div>
-      <div className="flex flex-wrap justify-stretch gap-3 p-2">
-        {outcomes.map((outcome, index) => {
-          let classes =
-            "w-48 flex-grow flex-col rounded-full p-4 text-center text-zinc-50 ";
-          classes += colors[index % colors.length];
+  if (layout === Layout.HORIZONTAL) {
+    return (
+      <div className={classes}>
+        <div className="m-2 rounded-full bg-zinc-800 bg-opacity-35 p-2">
+          {title}
+        </div>
+        <div className="flex flex-wrap justify-stretch gap-3 p-2">
+          {outcomes.map((outcome, index) => {
+            let classes =
+              "w-48 flex-grow flex-col rounded-full p-4 text-center text-zinc-50 ";
+            classes += colors[index % colors.length];
 
-          return (
-            <div key={outcome.id} className={classes}>
-              <div className="font-sans text-xl">{outcome.title}</div>
-              <div className="font-sans text-lg">
-                {outcome.channel_points ?? 0}
+            return (
+              <div key={outcome.id} className={classes}>
+                <div className="font-sans text-xl">{outcome.title}</div>
+                <div className="font-sans text-lg">
+                  {outcome.channel_points ?? 0}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    outcomes.sort((a, b) => {
+      if ((a.channel_points ?? 0) < (b.channel_points ?? 0)) {
+        return -1;
+      } else if ((a.channel_points ?? 0) > (b.channel_points ?? 0)) {
+        return 1;
+      }
+      return 0;
+    });
+    return (
+      <div className={classes}>
+        <div className="m-2 rounded-full bg-zinc-800 bg-opacity-35 p-2">
+          {title}
+        </div>
+        <div className="flex gap-3 p-2">
+          <div className="flex w-1/2 flex-grow flex-col">
+            {/*display top winners*/}
+          </div>
+          <div className="flex w-1/2 flex-grow flex-col justify-stretch gap-3">
+            {outcomes.map((outcome, index) => {
+              let classes =
+                "flex flex-grow rounded-full p-4 text-center text-zinc-50 ";
+              classes += colors[index % colors.length];
+
+              return (
+                <div key={outcome.id} className={classes}>
+                  <div className="w-1/2 font-sans text-xl">
+                    {outcome.channel_points ?? 0}
+                  </div>
+                  <div className="font-sans text-lg">{outcome.title}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 
 enum PredictionState {
@@ -217,6 +262,7 @@ export default function Page() {
       title={predictionEvent?.payload.event?.title ?? ""}
       outcomes={predictionEvent?.payload.event?.outcomes ?? []}
       status={predictionState}
+      layout={Layout.VERTICAL}
     />
   );
 }
