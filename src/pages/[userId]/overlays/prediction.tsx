@@ -22,25 +22,26 @@ const twitchWebsocketMessageSessionSchema = z.object({
   reconnect_url: z.nullable(z.string()),
 });
 
+const twitchWebsocketMessageTopPredictorsSchema = z.object({
+  user_id: z.string(),
+  user_login: z.string(),
+  user_name: z.string(),
+  channel_points_won: z.nullable(z.number()),
+  channel_points_used: z.number(),
+});
+
 const twitchWebsocketMessageOutcomeSchema = z.object({
   id: z.string(),
   title: z.string(),
   color: z.string(),
   users: z.optional(z.number()),
   channel_points: z.optional(z.number()),
-  top_predictors: z.optional(
-    z
-      .object({
-        user_id: z.string(),
-        user_login: z.string(),
-        user_name: z.string(),
-        channel_points_won: z.nullable(z.number()),
-        channel_points_used: z.number(),
-      })
-      .array(),
-  ),
+  top_predictors: z.optional(twitchWebsocketMessageTopPredictorsSchema.array()),
 });
 
+type TwitchTopPredictor = z.infer<
+  typeof twitchWebsocketMessageTopPredictorsSchema
+>;
 type TwitchOutcome = z.infer<typeof twitchWebsocketMessageOutcomeSchema>;
 
 const twitchWebsocketMessageSubscriptionSchema = z.object({
@@ -64,6 +65,7 @@ const twitchWebsocketMessageEventSchema = z.object({
   broadcaster_user_login: z.string(),
   broadcaster_user_name: z.string(),
   title: z.string(),
+  winning_outcome_id: z.optional(z.string()),
   outcomes: twitchWebsocketMessageOutcomeSchema.array(),
   started_at: z.string(),
   locks_at: z.optional(z.string()),
@@ -92,11 +94,18 @@ enum Layout {
 type PredictionProps = {
   title: string;
   outcomes: TwitchOutcome[];
+  winner?: string;
   status: PredictionState;
   layout: Layout;
 };
 
-function Prediction({ title, outcomes, status, layout }: PredictionProps) {
+function Prediction({
+  title,
+  outcomes,
+  winner,
+  status,
+  layout,
+}: PredictionProps) {
   const colors: string[] = [
     "bg-blue-600",
     "bg-red-600",
@@ -113,6 +122,22 @@ function Prediction({ title, outcomes, status, layout }: PredictionProps) {
   } else {
     classes += " opacity-0";
   }
+  const listTopPredictors = (winner: string, outcomes: TwitchOutcome[]) => {
+    const outcome = outcomes.find((outcome) => {
+      return outcome.id === winner;
+    });
+    return outcome?.top_predictors?.map((predictor) => {
+      return (
+        <div
+          key={predictor.user_id}
+          className="bg-zinc-900 p-2 font-bold text-green-500 opacity-35"
+        >
+          {predictor.user_name} +{predictor.channel_points_won ?? 0}
+        </div>
+      );
+    });
+  };
+
   if (layout === Layout.HORIZONTAL) {
     return (
       <div className={classes}>
@@ -138,6 +163,7 @@ function Prediction({ title, outcomes, status, layout }: PredictionProps) {
       </div>
     );
   } else {
+    // Layout.VERTICAL
     outcomes.sort((a, b) => {
       if ((a.channel_points ?? 0) < (b.channel_points ?? 0)) {
         return -1;
@@ -153,12 +179,12 @@ function Prediction({ title, outcomes, status, layout }: PredictionProps) {
         </div>
         <div className="flex gap-3 p-2">
           <div className="flex w-1/2 flex-grow flex-col">
-            {/*display top winners*/}
+            {winner && listTopPredictors(winner, outcomes)}
           </div>
           <div className="flex w-1/2 flex-grow flex-col justify-stretch gap-3">
             {outcomes.map((outcome, index) => {
               let classes =
-                "flex flex-grow rounded-full p-4 text-center text-zinc-50 ";
+                "flex flex-grow rounded-full p-4 text-center text-zinc-50 transition-transform ";
               classes += colors[index % colors.length];
 
               return (
@@ -261,6 +287,7 @@ export default function Page() {
     <Prediction
       title={predictionEvent?.payload.event?.title ?? ""}
       outcomes={predictionEvent?.payload.event?.outcomes ?? []}
+      winner={predictionEvent?.payload.event?.winning_outcome_id}
       status={predictionState}
       layout={Layout.VERTICAL}
     />
