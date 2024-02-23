@@ -1,5 +1,6 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -29,6 +30,22 @@ export default function Home() {
               A Browser Source overlay for Twitch Predictions that supports more
               than two outcomes.
             </p>
+            <div className="flex w-full items-center justify-evenly">
+              <p className="w-1/2">
+                Here&apos;s what it looks like in OBS with a 4 outcome
+                prediction. I&apos;ve organized it with a vertical layout for
+                now, more options may come later. For now I recommend setting up
+                an OBS browser source with plenty of vertical space. When the
+                prediction ends, the top predictors for the winning outcome
+                appear on the left for 30 seconds.
+              </p>
+              <Image
+                src="/demo.png"
+                width={300}
+                height={300}
+                alt="Demo of the overlay"
+              />
+            </div>
             <p>
               If you like what you see and want this project to stay online and
               get more features,{" "}
