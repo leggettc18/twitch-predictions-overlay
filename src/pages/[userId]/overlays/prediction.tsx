@@ -132,7 +132,7 @@ function Prediction({
           key={predictor.user_id}
           className="bg-zinc-900 p-2 font-bold text-green-500 opacity-35"
         >
-          {predictor.user_name} +{predictor.channel_points_won ?? 0}
+          {predictor.user_name} +{predictor.channel_points_won ?? 0} pts
         </div>
       );
     });
@@ -154,7 +154,7 @@ function Prediction({
               <div key={outcome.id} className={classes}>
                 <div className="font-sans text-xl">{outcome.title}</div>
                 <div className="font-sans text-lg">
-                  {outcome.channel_points ?? 0}
+                  {outcome.channel_points ?? 0} pts
                 </div>
               </div>
             );
@@ -190,7 +190,7 @@ function Prediction({
               return (
                 <div key={outcome.id} className={classes}>
                   <div className="w-1/2 font-sans text-xl">
-                    {outcome.channel_points ?? 0}
+                    {outcome.channel_points ?? 0} pts
                   </div>
                   <div className="font-sans text-lg">{outcome.title}</div>
                 </div>
