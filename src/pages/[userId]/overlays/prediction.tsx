@@ -1,10 +1,9 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import useWebSocket, { ReadyState } from "react-use-websocket";
+import useWebSocket from "react-use-websocket";
 import z from "zod";
 
 import { api } from "~/utils/api";
-import { stringToJsonSchema } from "~/utils/stringToJson";
 
 const twitchWebsocketMessageMetadataSchema = z.object({
   message_id: z.string(),
@@ -39,9 +38,6 @@ const twitchWebsocketMessageOutcomeSchema = z.object({
   top_predictors: z.optional(twitchWebsocketMessageTopPredictorsSchema.array()),
 });
 
-type TwitchTopPredictor = z.infer<
-  typeof twitchWebsocketMessageTopPredictorsSchema
->;
 type TwitchOutcome = z.infer<typeof twitchWebsocketMessageOutcomeSchema>;
 
 const twitchWebsocketMessageSubscriptionSchema = z.object({
@@ -221,67 +217,64 @@ export default function Page() {
   const subscribeToPredictions = api.subscriptions.predictions.useMutation();
   const { lastMessage } = useWebSocket(socketUrl);
 
-  const handleSubscribingToPredictions = async (
-    userId: string,
-    sessionId: string,
-  ) => {
-    await subscribeToPredictions.mutateAsync({
-      userId,
-      sessionId,
-    });
-  };
+  useEffect(() => {
+    const handleSubscribingToPredictions = async (
+      userId: string,
+      sessionId: string,
+    ) => {
+      await subscribeToPredictions.mutateAsync({
+        userId,
+        sessionId,
+      });
+    };
+    
+    const handleReconnectUrl = async (reconnect_url: string | null) => {
+      setSocketUrl(reconnect_url ?? socketUrl);
+    };
 
-  const handleReconnectUrl = async (reconnect_url: string | null) => {
-    setSocketUrl(reconnect_url ?? socketUrl);
-  };
-
-  const handleWebsocketMessage = async (
-    message: MessageEvent<string> | null,
-  ) => {
-    if (message) {
-      const parsed = twitchWebsocketMessageSchema.parse(
-        JSON.parse(message.data),
-      );
-      if (parsed.metadata.message_type === "session_welcome") {
-        if (parsed.payload.session) {
-          await handleSubscribingToPredictions(
-            router.query.userId as string,
-            parsed.payload.session?.id,
-          );
-        }
-      } else if (parsed.metadata.message_type === "session_reconnect") {
-        if (parsed.payload.session) {
-          await handleReconnectUrl(parsed.payload.session?.reconnect_url);
-        }
-      } else if (parsed.metadata.message_type === "notification") {
-        if (parsed.metadata.subscription_type === "channel.prediction.begin") {
-          setPredictionState(PredictionState.STARTED);
-          setPredictionEvent(parsed);
-        } else if (
-          parsed.metadata.subscription_type === "channel.prediction.progress"
-        ) {
-          setPredictionEvent(parsed);
-        } else if (
-          parsed.metadata.subscription_type === "channel.prediction.lock"
-        ) {
-          setPredictionState(PredictionState.LOCKED);
-          setPredictionEvent(parsed);
-        } else if (
-          parsed.metadata.subscription_type === "channel.prediction.end"
-        ) {
-          setPredictionState(PredictionState.ENDED);
-          setPredictionEvent(parsed);
-          setTimeout(() => {
-            setPredictionState(PredictionState.NOT_STARTED);
-          }, 30000);
+    const handleWebsocketMessage = async (message: MessageEvent<string> | null) => {
+      if (message) {
+        const parsed = twitchWebsocketMessageSchema.parse(
+          JSON.parse(message.data),
+        );
+        if (parsed.metadata.message_type === "session_welcome") {
+          if (parsed.payload.session) {
+            await handleSubscribingToPredictions(
+              router.query.userId as string,
+              parsed.payload.session?.id,
+            );
+          }
+        } else if (parsed.metadata.message_type === "session_reconnect") {
+          if (parsed.payload.session) {
+            await handleReconnectUrl(parsed.payload.session?.reconnect_url);
+          }
+        } else if (parsed.metadata.message_type === "notification") {
+          if (parsed.metadata.subscription_type === "channel.prediction.begin") {
+            setPredictionState(PredictionState.STARTED);
+            setPredictionEvent(parsed);
+          } else if (
+            parsed.metadata.subscription_type === "channel.prediction.progress"
+          ) {
+            setPredictionEvent(parsed);
+          } else if (
+            parsed.metadata.subscription_type === "channel.prediction.lock"
+          ) {
+            setPredictionState(PredictionState.LOCKED);
+            setPredictionEvent(parsed);
+          } else if (
+            parsed.metadata.subscription_type === "channel.prediction.end"
+          ) {
+            setPredictionState(PredictionState.ENDED);
+            setPredictionEvent(parsed);
+            setTimeout(() => {
+              setPredictionState(PredictionState.NOT_STARTED);
+            }, 30000);
+          }
         }
       }
-    }
-  };
-
-  useEffect(() => {
+    };
     void handleWebsocketMessage(lastMessage);
-  }, [lastMessage]);
+  }, [lastMessage, router.query.userId, socketUrl, subscribeToPredictions]);
 
   return (
     <Prediction

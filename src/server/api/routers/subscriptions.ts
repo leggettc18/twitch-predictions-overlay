@@ -35,20 +35,19 @@ export const subscriptionsRouter = createTRPCRouter({
           body: JSON.stringify(data),
         };
         const url = "https://api.twitch.tv/helix/eventsub/subscriptions";
-
-        const beginRes = await fetch(url, requestOptions);
+        await fetch(url, requestOptions);
 
         data.type = "channel.prediction.progress";
         requestOptions.body = JSON.stringify(data);
-        const progressRes = await fetch(url, requestOptions);
+        await fetch(url, requestOptions);
 
         data.type = "channel.prediction.lock";
         requestOptions.body = JSON.stringify(data);
-        const lockRes = await fetch(url, requestOptions);
+        await fetch(url, requestOptions);
 
         data.type = "channel.prediction.end";
         requestOptions.body = JSON.stringify(data);
-        const endRes = await fetch(url, requestOptions);
+        await fetch(url, requestOptions);
       }
     }),
 });

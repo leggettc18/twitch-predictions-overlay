@@ -1,13 +1,14 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect } from "react";
 
 import { api } from "~/utils/api";
 
+/* eslint-disable @next/next/no-page-custom-font */
+
 export default function Home() {
-  const hello = api.post.hello.useQuery({ text: "from tRPC" });
+  api.post.hello.useQuery({ text: "from tRPC" });
 
   return (
     <>
