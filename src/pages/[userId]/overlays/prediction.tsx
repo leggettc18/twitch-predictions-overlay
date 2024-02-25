@@ -166,9 +166,9 @@ function Prediction({
     // Layout.VERTICAL
     outcomes.sort((a, b) => {
       if ((a.channel_points ?? 0) < (b.channel_points ?? 0)) {
-        return -1;
-      } else if ((a.channel_points ?? 0) > (b.channel_points ?? 0)) {
         return 1;
+      } else if ((a.channel_points ?? 0) > (b.channel_points ?? 0)) {
+        return -1;
       }
       return 0;
     });
