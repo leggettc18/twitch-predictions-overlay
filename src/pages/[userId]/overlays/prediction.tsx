@@ -130,7 +130,7 @@ function Prediction({
       return (
         <div
           key={predictor.user_id}
-          className="bg-zinc-900 p-2 font-bold text-green-500 opacity-35"
+          className="bg-zinc-900 bg-opacity-35 p-2 font-bold text-green-500"
         >
           {predictor.user_name} +{predictor.channel_points_won ?? 0} pts
         </div>
