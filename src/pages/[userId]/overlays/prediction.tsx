@@ -1,3 +1,4 @@
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
@@ -87,8 +88,13 @@ const twitchWebsocketMessageSchema = z.object({
 type TwitchWebsocketMessage = z.infer<typeof twitchWebsocketMessageSchema>;
 
 enum Layout {
-  HORIZONTAL,
-  VERTICAL,
+  HORIZONTAL = "horizontal",
+  VERTICAL = "vertical",
+}
+
+enum Direction {
+  START = "start",
+  END = "end",
 }
 
 type PredictionProps = {
@@ -97,6 +103,7 @@ type PredictionProps = {
   winner?: string;
   status: PredictionState;
   layout: Layout;
+  direction: Direction;
 };
 
 function Prediction({
@@ -105,6 +112,7 @@ function Prediction({
   winner,
   status,
   layout,
+  direction,
 }: PredictionProps) {
   const colors: string[] = [
     "bg-blue-600",
@@ -138,53 +146,66 @@ function Prediction({
     });
   };
 
+  outcomes.sort((a, b) => {
+    if ((a.channel_points ?? 0) < (b.channel_points ?? 0)) {
+      return 1;
+    } else if ((a.channel_points ?? 0) > (b.channel_points ?? 0)) {
+      return -1;
+    }
+    return 0;
+  });
+
   if (layout === Layout.HORIZONTAL) {
+    let outcomesClasses = "flex gap-3 p-2";
+    if (direction === Direction.END) {
+      outcomesClasses += " flex-col-reverse";
+    }
     return (
       <div className={classes}>
-        <div className="m-2 rounded-full bg-zinc-800 bg-opacity-35 p-2">
+        <div className="m-2 rounded-2xl bg-zinc-800 bg-opacity-35 p-2">
           {title}
         </div>
-        <div className="flex flex-wrap justify-stretch gap-3 p-2">
-          {outcomes.map((outcome, index) => {
-            let classes =
-              "w-48 flex-grow flex-col rounded-full p-4 text-center text-zinc-50 ";
-            classes += colors[index % colors.length];
+        <div className={outcomesClasses}>
+          <div className="flex gap-2">
+            {outcomes.map((outcome, index) => {
+              let outcomeClasses =
+                "w-48 flex-col rounded-2xl p-2 text-center text-zinc-50 justify-evenly h-100% ";
+              outcomeClasses += colors[index % colors.length];
 
-            return (
-              <div key={outcome.id} className={classes}>
-                <div className="font-sans text-xl">{outcome.title}</div>
-                <div className="font-sans text-lg">
-                  {outcome.channel_points ?? 0} pts
+              return (
+                <div key={outcome.id} className={outcomeClasses}>
+                  <div className="font-sans text-xl">
+                    {outcome.channel_points ?? 0} pts
+                  </div>
+                  <div className="truncate text-nowrap font-sans text-lg">
+                    {outcome.title}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+          <div className="flex w-1/2 flex-grow">
+            {winner && listTopPredictors(winner, outcomes)}
+          </div>
         </div>
       </div>
     );
   } else {
     // Layout.VERTICAL
-    outcomes.sort((a, b) => {
-      if ((a.channel_points ?? 0) < (b.channel_points ?? 0)) {
-        return 1;
-      } else if ((a.channel_points ?? 0) > (b.channel_points ?? 0)) {
-        return -1;
-      }
-      return 0;
-    });
+    let outcomesClasses = "flex gap-2 p-2";
+    if (direction === Direction.END) {
+      outcomesClasses += " flex-row-reverse";
+    }
     return (
       <div className={classes}>
-        <div className="m-2 rounded-full bg-zinc-800 bg-opacity-35 p-2">
+        <div className="m-2 rounded-2xl bg-zinc-800 bg-opacity-35 p-2">
           {title}
         </div>
-        <div className="flex gap-3 p-2">
-          <div className="flex w-1/2 flex-grow flex-col">
-            {winner && listTopPredictors(winner, outcomes)}
-          </div>
+        <div className={outcomesClasses}>
           <div className="flex w-1/2 flex-grow flex-col justify-stretch gap-3">
             {outcomes.map((outcome, index) => {
               let classes =
-                "flex flex-grow rounded-full p-4 text-center text-zinc-50 transition-transform ";
+                "flex flex-grow rounded-2xl p-4 text-center text-zinc-50 transition-transform ";
               classes += colors[index % colors.length];
 
               return (
@@ -196,6 +217,9 @@ function Prediction({
                 </div>
               );
             })}
+          </div>
+          <div className="flex w-1/2 flex-grow flex-col">
+            {winner && listTopPredictors(winner, outcomes)}
           </div>
         </div>
       </div>
@@ -220,6 +244,9 @@ export default function Page() {
   const router = useRouter();
   const subscribeToPredictions = api.subscriptions.predictions.useMutation();
   const { lastMessage } = useWebSocket(socketUrl);
+  const searchParams = useSearchParams();
+  const layout = searchParams.get("layout");
+  const direction = searchParams.get("direction");
 
   const handleSubscribingToPredictions = async (
     userId: string,
@@ -289,7 +316,8 @@ export default function Page() {
       outcomes={predictionEvent?.payload.event?.outcomes ?? []}
       winner={predictionEvent?.payload.event?.winning_outcome_id}
       status={predictionState}
-      layout={Layout.VERTICAL}
+      layout={layout === "horizontal" ? Layout.HORIZONTAL : Layout.VERTICAL}
+      direction={direction === "start" ? Direction.START : Direction.END}
     />
   );
 }
