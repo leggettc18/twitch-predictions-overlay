@@ -124,11 +124,14 @@ function Prediction({
     "bg-yellow-600",
   ];
   let classes =
-    "flex-col gap-2 text-center font-sans text-2xl font-bold text-zinc-50 transition-opacity duration-300";
+    "flex flex-col gap-2 text-center font-sans text-2xl font-bold text-zinc-50 transition-opacity duration-300 h-screen";
   if (status === PredictionState.STARTED || status == PredictionState.ENDED) {
     classes += " opacity-100";
   } else {
     classes += " opacity-0";
+  }
+  if (direction == Direction.END && layout == Layout.HORIZONTAL) {
+    classes += " justify-end";
   }
   const listTopPredictors = (winner: string, outcomes: TwitchOutcome[]) => {
     const outcome = outcomes.find((outcome) => {
