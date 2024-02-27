@@ -10,6 +10,7 @@ import {
 } from "~/components/Prediction";
 
 import { api } from "~/utils/api";
+import { type TwitchOutcome } from "~/utils/types/twitch";
 
 /* eslint-disable @next/next/no-page-custom-font */
 

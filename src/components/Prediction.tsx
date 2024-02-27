@@ -1,4 +1,4 @@
-import { TwitchOutcome } from "~/utils/types/twitch";
+import { type TwitchOutcome } from "~/utils/types/twitch";
 
 export enum Layout {
   HORIZONTAL = "horizontal",
