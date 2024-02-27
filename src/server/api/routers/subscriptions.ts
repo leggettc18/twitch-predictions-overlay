@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { env } from "~/env";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import validateAndRefreshToken from "~/utils/validateAndRefreshToken";
 
 export const subscriptionsRouter = createTRPCRouter({
   predictions: publicProcedure
@@ -12,6 +13,7 @@ export const subscriptionsRouter = createTRPCRouter({
         },
       });
       if (account?.access_token) {
+        await validateAndRefreshToken(account);
         const headers = new Headers();
         headers.set("Content-Type", "application/json");
         headers.set("Client-Id", env.TWITCH_CLIENT_ID);
