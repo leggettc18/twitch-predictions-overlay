@@ -174,12 +174,12 @@ function Prediction({
           <div className="flex justify-stretch gap-2">
             {outcomes.map((outcome, index) => {
               let outcomeClasses =
-                "flex flex-col flex-grow w-48 min-w-0 rounded-2xl p-2 text-center text-zinc-50 justify-stretch h-100% ";
+                "flex flex-col flex-grow w-48 min-w-24 rounded-2xl p-2 text-center text-zinc-50 justify-stretch h-100% ";
               outcomeClasses += colors[index % colors.length];
 
               return (
                 <div key={outcome.id} className={outcomeClasses}>
-                  <div className="truncate font-sans text-xl">
+                  <div className="font-sans text-xl">
                     {outcome.channel_points ?? 0} pts
                   </div>
                   <div className="truncate text-nowrap font-sans text-lg">
