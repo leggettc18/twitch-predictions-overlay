@@ -2,6 +2,12 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import { useEffect } from "react";
+import {
+  Direction,
+  Layout,
+  Prediction,
+  PredictionState,
+} from "~/components/Prediction";
 
 import { api } from "~/utils/api";
 
@@ -90,20 +96,77 @@ function AuthShowcase() {
     alert("URL Copied");
   };
 
+  const sample: TwitchOutcome[] = [
+    {
+      id: "1",
+      title: "Outcome 1",
+      color: "blue",
+      users: 3,
+      channel_points: 500,
+      top_predictors: [
+        {
+          user_id: "1",
+          user_login: "winner1",
+          user_name: "winner1",
+          channel_points_won: 1000,
+          channel_points_used: 200,
+        },
+        {
+          user_id: "2",
+          user_login: "hunter2",
+          user_name: "hunter2",
+          channel_points_won: 500,
+          channel_points_used: 100,
+        },
+        {
+          user_id: "3",
+          user_login: "waldo3",
+          user_name: "waldo3",
+          channel_points_won: 100,
+          channel_points_used: 20,
+        },
+      ],
+    },
+    {
+      id: "2",
+      title: "Outcome 2",
+      color: "blue",
+      users: 0,
+      channel_points: 0,
+    },
+    {
+      id: "3",
+      title: "Outcome 3",
+      color: "blue",
+      users: 0,
+      channel_points: 0,
+    },
+  ];
+
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-center text-2xl text-white">
         {sessionData && (
-          <span>
-            Add the following URL as a Browser Source (Click to Copy):{" "}
-            <a
-              className="text-purple-300 hover:text-purple-500"
-              href="#"
-              onClick={copy}
-            >
-              {url}
-            </a>
-          </span>
+          <div>
+            <span>
+              Add the following URL as a Browser Source (Click to Copy):{" "}
+              <a
+                className="text-purple-300 hover:text-purple-500"
+                href="#"
+                onClick={copy}
+              >
+                {url}
+              </a>
+            </span>
+            <Prediction
+              title={"Demo Prediction"}
+              outcomes={sample}
+              winner={"1"}
+              status={PredictionState.ENDED}
+              layout={Layout.VERTICAL}
+              direction={Direction.END}
+            />
+          </div>
         )}
       </p>
       <button
