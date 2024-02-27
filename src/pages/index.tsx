@@ -1,7 +1,7 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Direction,
   Layout,
@@ -80,6 +80,8 @@ export default function Home() {
 
 function AuthShowcase() {
   const { data: sessionData } = useSession();
+  const [demoLayout, setDemoLayout] = useState(Layout.VERTICAL);
+  const [demoDirection, setDemoDirection] = useState(Direction.END);
 
   useEffect(() => {
     if (sessionData?.error === "RefreshAccessTokenError") {
@@ -143,12 +145,45 @@ function AuthShowcase() {
       channel_points: 0,
     },
   ];
+  const getUrl = () => {
+    return url + "?layout=" + demoLayout + "&direction=" + demoDirection;
+  };
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <p className="text-center text-2xl text-white">
         {sessionData && (
           <div>
+            <div className="flex gap-2">
+              <select
+                className="bg-zinc-800"
+                value={demoLayout}
+                onChange={(e) => {
+                  if (e.target.value === "horizontal") {
+                    setDemoLayout(Layout.HORIZONTAL);
+                  } else {
+                    setDemoLayout(Layout.VERTICAL);
+                  }
+                }}
+              >
+                <option value="vertical">Vertical</option>
+                <option value="horizontal">Horizontal</option>
+              </select>
+              <select
+                className="bg-zinc-800"
+                value={demoDirection}
+                onChange={(e) => {
+                  if (e.target.value === "start") {
+                    setDemoDirection(Direction.START);
+                  } else {
+                    setDemoDirection(Direction.END);
+                  }
+                }}
+              >
+                <option value="start">Start (top/left)</option>
+                <option value="end">End (bottom/right)</option>
+              </select>
+            </div>
             <span>
               Add the following URL as a Browser Source (Click to Copy):{" "}
               <a
@@ -156,17 +191,19 @@ function AuthShowcase() {
                 href="#"
                 onClick={copy}
               >
-                {url}
+                {getUrl()}
               </a>
             </span>
-            <Prediction
-              title={"Demo Prediction"}
-              outcomes={sample}
-              winner={"1"}
-              status={PredictionState.ENDED}
-              layout={Layout.VERTICAL}
-              direction={Direction.END}
-            />
+            <div className="h-[30rem] bg-zinc-700">
+              <Prediction
+                title={"Demo Prediction"}
+                outcomes={sample}
+                winner={"1"}
+                status={PredictionState.ENDED}
+                layout={demoLayout}
+                direction={demoDirection}
+              />
+            </div>
           </div>
         )}
       </p>

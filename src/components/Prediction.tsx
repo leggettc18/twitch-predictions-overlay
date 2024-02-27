@@ -37,7 +37,7 @@ export function Prediction({
     "bg-yellow-600",
   ];
   let classes =
-    "flex flex-col gap-2 text-center font-sans text-2xl font-bold text-zinc-50 transition-opacity duration-300 h-screen";
+    "flex flex-col gap-2 text-center font-sans text-2xl font-bold text-zinc-50 transition-opacity duration-300 h-full";
   if (status === PredictionState.STARTED || status == PredictionState.ENDED) {
     classes += " opacity-100";
   } else {
@@ -87,7 +87,7 @@ export function Prediction({
           <div className="flex justify-stretch gap-2">
             {outcomes.map((outcome, index) => {
               let outcomeClasses =
-                "flex flex-col flex-grow w-48 min-w-0 rounded-2xl p-2 text-center text-zinc-50 justify-stretch h-100% ";
+                "flex flex-col flex-grow w-48 min-w-0 rounded-2xl p-2 text-center text-zinc-50 justify-stretch ";
               outcomeClasses += colors[index % colors.length];
 
               return (
