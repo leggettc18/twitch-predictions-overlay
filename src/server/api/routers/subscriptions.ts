@@ -37,7 +37,6 @@ export const subscriptionsRouter = createTRPCRouter({
           body: JSON.stringify(data),
         };
         const url = "https://api.twitch.tv/helix/eventsub/subscriptions";
-
         await fetch(url, requestOptions);
 
         data.type = "channel.prediction.progress";
