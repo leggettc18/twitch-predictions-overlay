@@ -128,10 +128,12 @@ export function Prediction({
 
               return (
                 <div key={outcome.id} className={classes}>
-                  <div className="w-1/2 font-sans text-xl">
+                  <div className="w-1/2 truncate font-sans text-xl">
                     {outcome.channel_points ?? 0} pts
                   </div>
-                  <div className="font-sans text-lg">{outcome.title}</div>
+                  <div className="truncate font-sans text-lg">
+                    {outcome.title}
+                  </div>
                 </div>
               );
             })}
