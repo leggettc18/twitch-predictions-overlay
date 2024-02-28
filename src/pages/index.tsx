@@ -1,6 +1,5 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   Direction,
@@ -155,7 +154,13 @@ function AuthShowcase() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      <div className="w-full text-center text-2xl text-white">
+      <div className="w-full text-3xl text-white">
+        <p className="mb-4">
+          Imagine the gray square is your Browser Source in OBS. Use the Layout
+          and Direction dropdowns to decide how to orient the overlay, and then,
+          if you have already linked your Twitch account, you can copy the
+          provided URL to paste it in your Browser Source.
+        </p>
         <div className="flex gap-2">
           <label htmlFor="layout">Layout:</label>
           <select
@@ -190,7 +195,7 @@ function AuthShowcase() {
             <option value="end">End (bottom/right)</option>
           </select>
         </div>
-        <div className="h-[30rem] bg-zinc-700">
+        <div className="mb-4 h-[30rem] bg-zinc-700">
           <Prediction
             title={"Demo Prediction"}
             outcomes={sample}
