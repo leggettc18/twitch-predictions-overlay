@@ -1,6 +1,6 @@
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 import {
   Direction,
@@ -29,17 +29,17 @@ export default function Page() {
   const layout = searchParams.get("layout");
   const direction = searchParams.get("direction");
 
-  useEffect(() => {
-    const handleSubscribingToPredictions = async (
-      userId: string,
-      sessionId: string,
-    ) => {
+  const subscribe = useCallback(
+    async (userId: string, sessionId: string) => {
       await subscribeToPredictions.mutateAsync({
         userId,
         sessionId,
       });
-    };
+    },
+    [subscribeToPredictions],
+  );
 
+  useEffect(() => {
     const handleReconnectUrl = async (reconnect_url: string | null) => {
       setSocketUrl(reconnect_url ?? socketUrl);
     };
@@ -53,7 +53,7 @@ export default function Page() {
         );
         if (parsed.metadata.message_type === "session_welcome") {
           if (parsed.payload.session) {
-            await handleSubscribingToPredictions(
+            await subscribe(
               router.query.userId as string,
               parsed.payload.session?.id,
             );
@@ -90,7 +90,11 @@ export default function Page() {
       }
     };
     void handleWebsocketMessage(lastMessage);
-  }, [lastMessage, router.query.userId, socketUrl, subscribeToPredictions]);
+    // disabled lint for this line because if I add subscribe as a dependency it
+    // loops forever re-calling that mutation over and over again. Haven't
+    // found a way around it yet.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastMessage, router.query.userId, socketUrl]);
 
   return (
     <Prediction

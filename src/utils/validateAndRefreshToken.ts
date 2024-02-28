@@ -17,7 +17,7 @@ export default async function validateAndRefreshToken(account: Account) {
   });
   const validStatus: ValidateResponse =
     (await validateRes.json()) as ValidateResponse;
-  if (validateRes.status == 200 || validStatus.expires_in < 86400) {
+  if (validateRes.status == 200 || validStatus.expires_in < 3600) {
     const response = await fetch("https://id.twitch.tv/oauth2/token", {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
