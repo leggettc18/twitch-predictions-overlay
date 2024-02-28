@@ -34,7 +34,7 @@ export default function Home() {
           name="og:image"
           content="https://twitch.leggett.dev/_next/image?url=%2Fdemo.png&w=384&q=75"
         />
-        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@leggettc18" />
         <meta name="twitter:title" content="Twitch Predictions Overlay" />
         <meta
