@@ -157,7 +157,9 @@ function AuthShowcase() {
     <div className="flex flex-col items-center justify-center gap-4">
       <div className="w-full text-center text-2xl text-white">
         <div className="flex gap-2">
+          <label htmlFor="layout">Layout:</label>
           <select
+            name="layout"
             className="bg-zinc-800"
             value={demoLayout}
             onChange={(e) => {
@@ -171,7 +173,9 @@ function AuthShowcase() {
             <option value="vertical">Vertical</option>
             <option value="horizontal">Horizontal</option>
           </select>
+          <label htmlFor="direction">Direction:</label>
           <select
+            name="direction"
             className="bg-zinc-800"
             value={demoDirection}
             onChange={(e) => {
