@@ -73,25 +73,7 @@ export default function Home() {
               !
             </p>
           </div>
-          <div>
-            <div className="flex w-full items-center justify-evenly text-3xl text-zinc-100">
-              <p className="w-1/2">
-                Here&apos;s what it looks like in OBS with a 4 outcome
-                prediction with default layout and direction sesttings. When the
-                prediction ends, the top predictors for the winning outcome
-                appear on the left for 30 seconds. Link your Twitch account
-                below for a demo you can use and then copy the URL into a
-                Browser Source in OBS.
-              </p>
-              <Image
-                src="/demo.png"
-                width={300}
-                height={300}
-                alt="Demo of the overlay"
-              />
-            </div>
-          </div>
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex w-full flex-col justify-stretch gap-2">
             <AuthShowcase />
           </div>
         </div>
@@ -173,62 +155,60 @@ function AuthShowcase() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
+      <div className="w-full text-center text-2xl text-white">
+        <div className="flex gap-2">
+          <select
+            className="bg-zinc-800"
+            value={demoLayout}
+            onChange={(e) => {
+              if (e.target.value === "horizontal") {
+                setDemoLayout(Layout.HORIZONTAL);
+              } else {
+                setDemoLayout(Layout.VERTICAL);
+              }
+            }}
+          >
+            <option value="vertical">Vertical</option>
+            <option value="horizontal">Horizontal</option>
+          </select>
+          <select
+            className="bg-zinc-800"
+            value={demoDirection}
+            onChange={(e) => {
+              if (e.target.value === "start") {
+                setDemoDirection(Direction.START);
+              } else {
+                setDemoDirection(Direction.END);
+              }
+            }}
+          >
+            <option value="start">Start (top/left)</option>
+            <option value="end">End (bottom/right)</option>
+          </select>
+        </div>
+        <div className="h-[30rem] bg-zinc-700">
+          <Prediction
+            title={"Demo Prediction"}
+            outcomes={sample}
+            winner={"1"}
+            status={PredictionState.ENDED}
+            layout={demoLayout}
+            direction={demoDirection}
+          />
+        </div>
         {sessionData && (
-          <div>
-            <div className="flex gap-2">
-              <select
-                className="bg-zinc-800"
-                value={demoLayout}
-                onChange={(e) => {
-                  if (e.target.value === "horizontal") {
-                    setDemoLayout(Layout.HORIZONTAL);
-                  } else {
-                    setDemoLayout(Layout.VERTICAL);
-                  }
-                }}
-              >
-                <option value="vertical">Vertical</option>
-                <option value="horizontal">Horizontal</option>
-              </select>
-              <select
-                className="bg-zinc-800"
-                value={demoDirection}
-                onChange={(e) => {
-                  if (e.target.value === "start") {
-                    setDemoDirection(Direction.START);
-                  } else {
-                    setDemoDirection(Direction.END);
-                  }
-                }}
-              >
-                <option value="start">Start (top/left)</option>
-                <option value="end">End (bottom/right)</option>
-              </select>
-            </div>
-            <span>
-              Add the following URL as a Browser Source (Click to Copy):{" "}
-              <a
-                className="text-purple-300 hover:text-purple-500"
-                href="#"
-                onClick={copy}
-              >
-                {getUrl()}
-              </a>
-            </span>
-            <div className="h-[30rem] bg-zinc-700">
-              <Prediction
-                title={"Demo Prediction"}
-                outcomes={sample}
-                winner={"1"}
-                status={PredictionState.ENDED}
-                layout={demoLayout}
-                direction={demoDirection}
-              />
-            </div>
-          </div>
+          <span>
+            Add the following URL as a Browser Source (Click to Copy):{" "}
+            <a
+              className="text-purple-300 hover:text-purple-500"
+              href="#"
+              onClick={copy}
+            >
+              {getUrl()}
+            </a>
+          </span>
         )}
-      </p>
+      </div>
       <button
         className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
         onClick={sessionData ? () => void signOut() : () => void signIn()}
