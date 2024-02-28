@@ -30,11 +30,17 @@ export default function Home() {
           content="Twitch Predictions Overlay supporting more than 2 outcomes"
         />
         <meta name="og:title" content="Twitch Predictions Overlay" />
-        <meta name="og:image" content="/favicon.ico" />
+        <meta
+          name="og:image"
+          content="https://twitch.leggett.dev/_next/image?url=%2Fdemo.png&w=384&q=75"
+        />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@leggettc18" />
         <meta name="twitter:title" content="Twitch Predictions Overlay" />
-        <meta name="twitter:image" content="/favicon.ico" />
+        <meta
+          name="twitter:image"
+          content="https://twitch.leggett.dev/_next/image?url=%2Fdemo.png&w=384&q=75"
+        />
         <meta
           name="twitter:description"
           content="Twitch Predictions Overlay supporting more than 2 outcomes"
