@@ -73,6 +73,24 @@ export default function Home() {
               !
             </p>
           </div>
+          <div>
+            <div className="flex w-full items-center justify-evenly">
+              <p className="w-1/2">
+                Here&apos;s what it looks like in OBS with a 4 outcome
+                prediction with default layout and direction sesttings. When the
+                prediction ends, the top predictors for the winning outcome
+                appear on the left for 30 seconds. Link your Twitch account
+                below for a demo you can use and then copy the URL into a
+                Browser Source in OBS.
+              </p>
+              <Image
+                src="/demo.png"
+                width={300}
+                height={300}
+                alt="Demo of the overlay"
+              />
+            </div>
+          </div>
           <div className="flex flex-col items-center gap-2">
             <AuthShowcase />
           </div>
@@ -208,23 +226,6 @@ function AuthShowcase() {
                 direction={demoDirection}
               />
             </div>
-          </div>
-        )}
-        {!sessionData && (
-          <div className="flex w-full items-center justify-evenly">
-            <p className="w-1/2">
-              Here&apos;s what it looks like in OBS with a 4 outcome prediction
-              with default layout and direction sesttings. When the prediction
-              ends, the top predictors for the winning outcome appear on the
-              left for 30 seconds. Link your Twitch account below for a demo you
-              can use and then copy the URL into a Browser Source in OBS.
-            </p>
-            <Image
-              src="/demo.png"
-              width={300}
-              height={300}
-              alt="Demo of the overlay"
-            />
           </div>
         )}
       </p>
