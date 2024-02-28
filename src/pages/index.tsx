@@ -25,6 +25,12 @@ export default function Home() {
           name="description"
           content="Twitch Predictions Overlay supporting more than 2 outcomes"
         />
+        <meta
+          name="og:description"
+          content="Twitch Predictions Overlay supporting more than 2 outcomes"
+        />
+        <meta name="og:title" content="Twitch PredictionsOverlay" />
+        <meta name="og:image" content="/favicon.ico" />
         <link rel="icon" href="/favicon.ico" />
         <link
           href="https://fonts.googleapis.com/css?family=Allerta Stencil&display=optional"
