@@ -74,7 +74,7 @@ export default function Home() {
             </p>
           </div>
           <div>
-            <div className="flex w-full items-center justify-evenly">
+            <div className="flex w-full items-center justify-evenly text-3xl text-zinc-100">
               <p className="w-1/2">
                 Here&apos;s what it looks like in OBS with a 4 outcome
                 prediction with default layout and direction sesttings. When the
