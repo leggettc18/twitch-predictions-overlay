@@ -55,7 +55,7 @@ export default function Home() {
           <h1 className="bg-gradient-to-r from-purple-300 to-purple-500 bg-clip-text p-3 font-display text-5xl font-bold tracking-tight text-transparent sm:text-[5rem]">
             Twitch Prediction Overlay
           </h1>
-          <div className="flex flex-col items-start justify-center gap-4 text-3xl text-zinc-100 sm:grid-cols-2 md:gap-8">
+          <div className="flex flex-col items-start justify-center gap-4 text-2xl text-zinc-100 sm:grid-cols-2 md:gap-8">
             <p>
               A Browser Source overlay for Twitch Predictions that supports more
               than two outcomes.
@@ -154,7 +154,7 @@ function AuthShowcase() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      <div className="w-full text-3xl text-white">
+      <div className="w-full text-2xl text-white">
         <p className="mb-4">
           Imagine the gray square is your Browser Source in OBS. Use the Layout
           and Direction dropdowns to decide how to orient the overlay, and then,
