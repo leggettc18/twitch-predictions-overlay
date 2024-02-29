@@ -51,11 +51,11 @@ export default function Home() {
         />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-zinc-950">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+        <div className="container flex flex-col items-stretch justify-center gap-12 px-4 py-16 ">
           <h1 className="bg-gradient-to-r from-purple-300 to-purple-500 bg-clip-text p-3 font-display text-5xl font-bold tracking-tight text-transparent sm:text-[5rem]">
             Twitch Prediction Overlay
           </h1>
-          <div className="flex flex-col items-center justify-center gap-4 text-3xl text-zinc-100 sm:grid-cols-2 md:gap-8">
+          <div className="flex flex-col items-start justify-center gap-4 text-3xl text-zinc-100 sm:grid-cols-2 md:gap-8">
             <p>
               A Browser Source overlay for Twitch Predictions that supports more
               than two outcomes.
@@ -72,7 +72,7 @@ export default function Home() {
               !
             </p>
           </div>
-          <div className="flex w-full flex-col justify-stretch gap-2">
+          <div className="flex w-full flex-col justify-stretch gap-4">
             <AuthShowcase />
           </div>
         </div>
