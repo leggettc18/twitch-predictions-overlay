@@ -98,7 +98,7 @@ function AuthShowcase() {
     "/overlays/prediction";
 
   const copy = async () => {
-    await navigator.clipboard.writeText(url);
+    await navigator.clipboard.writeText(getUrl());
     alert("URL Copied");
   };
 
