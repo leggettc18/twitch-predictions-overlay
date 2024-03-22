@@ -61,6 +61,19 @@ export default function Home() {
               than two outcomes.
             </p>
             <p>
+              Due to the recent{" "}
+              <a
+                className="text-purple-300 hover:text-purple-500"
+                href="https://planetscale.com/docs/concepts/hobby-plan-deprecation-faq"
+              >
+                deprecation of PlanetScale&apos;s free tier
+              </a>
+              , I recently had to migrate this app to Turso. I believe the
+              migration went smoothly, but it is possible you may need to
+              re-link your Twitch account. Be sure to check in and do that
+              before your next stream!
+            </p>
+            <p>
               If you like what you see and want this project to stay online and
               get more features,{" "}
               <a
